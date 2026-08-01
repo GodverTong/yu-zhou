@@ -1,0 +1,2335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>宇宙 — 上下四方，古往今来</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+/* ============ CSS VARIABLES / DESIGN SYSTEM ============ */
+:root {
+  /* 间距梯度 */
+  --space-1: 5px;
+  --space-2: 10px;
+  --space-3: 15px;
+  --space-4: 20px;
+  --space-5: 30px;
+  --space-6: 40px;
+  --space-7: 60px;
+
+  /* 色彩系统 - 暗夜模式 (默认) */
+  --bg-primary: #0a0a12;
+  --bg-secondary: #12121f;
+  --bg-card: rgba(20, 20, 35, 0.7);
+  --bg-glass: rgba(255, 255, 255, 0.04);
+  --text-primary: #e8e4dd;
+  --text-secondary: #a09888;
+  --text-muted: #6a6258;
+  --accent-gold: #c9a84c;
+  --accent-gold-light: #e8ce7a;
+  --accent-gold-dark: #a8882a;
+  --accent-red: #c44a4a;
+  --border-color: rgba(201, 168, 76, 0.15);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --glow-gold: 0 0 30px rgba(201, 168, 76, 0.15);
+  --planet-glow: 0 0 60px rgba(201, 168, 76, 0.08);
+
+  /* 字体 */
+  --font-display: 'Ma Shan Zheng', 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  --font-title: 'Noto Serif SC', 'STSong', serif;
+  --font-body: 'Noto Sans SC', 'WenQuanYi Micro Hei', sans-serif;
+  --font-hand: 'ZCOOL XiaoWei', 'STXingkai', serif;
+
+  /* 排版 */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 3rem;
+  --text-4xl: 4rem;
+  --text-5xl: 5rem;
+  --text-6xl: 7rem;
+
+  /* 玻璃效果 */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: 20px;
+
+  /* 过渡 */
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-slow: 0.8s;
+  --duration-med: 0.5s;
+  --duration-fast: 0.3s;
+}
+
+/* 明亮模式 */
+[data-theme="light"] {
+  --bg-primary: #f5f0e8;
+  --bg-secondary: #ebe4d8;
+  --bg-card: rgba(255, 252, 245, 0.85);
+  --bg-glass: rgba(0, 0, 0, 0.03);
+  --text-primary: #2a2520;
+  --text-secondary: #6a6258;
+  --text-muted: #a09888;
+  --accent-gold: #b8943a;
+  --accent-gold-light: #d4b55a;
+  --accent-gold-dark: #8a6e20;
+  --border-color: rgba(180, 150, 80, 0.2);
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --glow-gold: 0 0 30px rgba(180, 150, 80, 0.1);
+  --planet-glow: 0 0 60px rgba(180, 150, 80, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(0, 0, 0, 0.06);
+}
+
+/* ============ RESET & BASE ============ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  transition: background var(--duration-slow) var(--ease-out-expo), color var(--duration-slow) var(--ease-out-expo);
+}
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+img { max-width: 100%; display: block; }
+
+/* ============ SCROLLBAR ============ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 2px; }
+
+/* ============ STARS BACKGROUND ============ */
+#stars-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ============ APP CONTAINER ============ */
+#app {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* ============ PAGE SYSTEM ============ */
+.page {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+  transform: scale(0.96) rotateY(0deg);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-6);
+  perspective: 1200px;
+}
+/* 内容页从顶部对齐，避免flex居中截断顶部内容 */
+#page-content {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.page.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1) rotateY(0deg);
+}
+.page.exit-left {
+  opacity: 0;
+  transform: translateX(-40px) scale(0.96) rotateY(-3deg);
+}
+.page.exit-right {
+  opacity: 0;
+  transform: translateX(40px) scale(0.96) rotateY(3deg);
+}
+.page.enter-left {
+  opacity: 0;
+  transform: translateX(40px) scale(0.96) rotateY(3deg);
+}
+.page.enter-right {
+  opacity: 0;
+  transform: translateX(-40px) scale(0.96) rotateY(-3deg);
+}
+
+/* ============ HOMEPAGE ============ */
+#page-home {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 宇宙标题 */
+.cosmos-title {
+  position: absolute;
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+}
+.cosmos-title .title-char {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 15vw, var(--text-6xl));
+  font-weight: 900;
+  color: var(--accent-gold);
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.2);
+  line-height: 0.9;
+  letter-spacing: 0.15em;
+  display: inline-block;
+  position: relative;
+  animation: titlePulse 4s ease-in-out infinite;
+}
+.cosmos-title .title-sub {
+  font-family: var(--font-title);
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  letter-spacing: 0.5em;
+  margin-top: var(--space-3);
+  font-weight: 300;
+}
+
+@keyframes titlePulse {
+  0%, 100% { text-shadow: 0 0 40px rgba(201, 168, 76, 0.2); }
+  50% { text-shadow: 0 0 60px rgba(201, 168, 76, 0.35), 0 0 120px rgba(201, 168, 76, 0.1); }
+}
+
+/* 水波纹纹理 - 背景 */
+.ripple-bg {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 80vmin; height: 80vmin;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.03) 0%, transparent 70%);
+}
+.ripple-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.08);
+  animation: rippleExpand 6s ease-out infinite;
+  pointer-events: none;
+}
+.ripple-ring:nth-child(1) { width: 30vmin; height: 30vmin; margin: -15vmin 0 0 -15vmin; animation-delay: 0s; }
+.ripple-ring:nth-child(2) { width: 50vmin; height: 50vmin; margin: -25vmin 0 0 -25vmin; animation-delay: 1.5s; }
+.ripple-ring:nth-child(3) { width: 70vmin; height: 70vmin; margin: -35vmin 0 0 -35vmin; animation-delay: 3s; }
+.ripple-ring:nth-child(4) { width: 90vmin; height: 90vmin; margin: -45vmin 0 0 -45vmin; animation-delay: 4.5s; }
+
+@keyframes rippleExpand {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+/* ============ SOLAR SYSTEM ============ */
+.solar-system {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.orbit {
+  position: absolute;
+  top: 50%; left: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.06);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.orbit:nth-child(1) { width: 20vmin; height: 20vmin; --ox: 0; --oy: 0; }
+.orbit:nth-child(2) { width: 32vmin; height: 32vmin; --ox: 0; --oy: 0; }
+.orbit:nth-child(3) { width: 44vmin; height: 44vmin; --ox: 0; --oy: 0; }
+.orbit:nth-child(4) { width: 56vmin; height: 56vmin; --ox: 0; --oy: 0; }
+.orbit:nth-child(5) { width: 68vmin; height: 68vmin; --ox: 0; --oy: 0; }
+.orbit:nth-child(6) { width: 80vmin; height: 80vmin; --ox: 0; --oy: 0; }
+.orbit:nth-child(7) { width: 92vmin; height: 92vmin; --ox: 0; --oy: 0; }
+
+.planet {
+  position: absolute;
+  left: 50%;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-spring), box-shadow var(--duration-fast) var(--ease-out-expo);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0,0,0,0.5);
+  pointer-events: auto;
+}
+.planet:hover {
+  transform: scale(1.4);
+  z-index: 20;
+}
+.planet .planet-label {
+  position: absolute;
+  bottom: -2.5em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out-expo);
+  pointer-events: none;
+  letter-spacing: 0.05em;
+}
+.planet:hover .planet-label {
+  opacity: 1;
+}
+.planet .planet-char {
+  font-size: 0.9rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+.planet .planet-glow-ring {
+  position: absolute;
+  top: -4px; left: -4px;
+  width: calc(100% + 8px); height: calc(100% + 8px);
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* 行星颜色 */
+.planet[data-system="0"] { background: linear-gradient(135deg, #4a90d9, #2a5a9a); box-shadow: 0 0 20px rgba(74,144,217,0.3); }
+.planet[data-system="1"] { background: linear-gradient(135deg, #d4a54a, #a07830); box-shadow: 0 0 20px rgba(212,165,74,0.3); }
+.planet[data-system="2"] { background: linear-gradient(135deg, #5ab86a, #3a8a4a); box-shadow: 0 0 20px rgba(90,184,106,0.3); }
+.planet[data-system="3"] { background: linear-gradient(135deg, #d46060, #a04040); box-shadow: 0 0 20px rgba(212,96,96,0.3); }
+.planet[data-system="4"] { background: linear-gradient(135deg, #60a0d4, #4070a0); box-shadow: 0 0 20px rgba(96,160,212,0.3); }
+.planet[data-system="5"] { background: linear-gradient(135deg, #b080d4, #8050a0); box-shadow: 0 0 20px rgba(176,128,212,0.3); }
+.planet[data-system="6"] { background: linear-gradient(135deg, #d4a0a0, #a07070); box-shadow: 0 0 20px rgba(212,160,160,0.3); }
+
+/* 行星悬浮菜单 */
+.planet-menu {
+  position: absolute;
+  display: none;
+  z-index: 30;
+  pointer-events: none;
+}
+.planet-menu.show {
+  display: block;
+  pointer-events: auto;
+}
+.planet-menu-item {
+  position: absolute;
+  width: 7vmin; height: 7vmin;
+  min-width: 56px; min-height: 56px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all var(--duration-med) var(--ease-out-expo);
+  font-family: var(--font-body);
+  font-size: 0.55rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.2;
+  animation: menuItemAppear 0.5s var(--ease-out-expo) backwards;
+  pointer-events: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.planet-menu-item:hover {
+  transform: scale(1.15);
+  background: var(--accent-gold);
+  color: #fff;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 20px rgba(201,168,76,0.3);
+}
+.planet-menu-item .menu-char {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+}
+.planet-menu-item .menu-label {
+  font-size: 0.5rem;
+  opacity: 0.7;
+  margin-top: 1px;
+}
+
+@keyframes menuItemAppear {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ============ DAY/NIGHT TOGGLE ============ */
+.theme-toggle {
+  position: fixed;
+  z-index: 100;
+  cursor: pointer;
+  transition: all var(--duration-med) var(--ease-out-expo);
+}
+.theme-toggle-light {
+  top: var(--space-5);
+  left: var(--space-5);
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5e6c8, #f0d8a0);
+  border: 1px solid rgba(180,150,80,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a7020;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 20px rgba(180,150,80,0.15);
+}
+.theme-toggle-light:hover { transform: scale(1.1); box-shadow: 0 2px 30px rgba(180,150,80,0.25); }
+.theme-toggle-dark {
+  bottom: var(--space-5);
+  right: var(--space-5);
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a2e, #0a0a1a);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a09888;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+.theme-toggle-dark:hover { transform: scale(1.1); box-shadow: 0 2px 30px rgba(0,0,0,0.4); }
+
+/* ============ BREADCRUMB ============ */
+.breadcrumb {
+  position: fixed;
+  bottom: var(--space-5);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  opacity: 0;
+  transition: opacity var(--duration-med) var(--ease-out-expo);
+  pointer-events: none;
+}
+.breadcrumb.show { opacity: 1; pointer-events: auto; }
+.breadcrumb-item {
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.breadcrumb-item:hover { color: var(--accent-gold); }
+.breadcrumb-sep { color: var(--text-muted); font-size: 0.6rem; }
+.breadcrumb-current { color: var(--accent-gold); }
+
+/* ============ SYSTEM PAGE LAYOUT ============ */
+.system-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.system-header {
+  text-align: center;
+  margin-bottom: var(--space-7);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.8s var(--ease-out-expo) forwards;
+}
+.system-header .system-icon {
+  font-family: var(--font-display);
+  font-size: var(--text-5xl);
+  color: var(--accent-gold);
+  display: block;
+  line-height: 1;
+  margin-bottom: var(--space-3);
+}
+.system-header .system-name {
+  font-family: var(--font-title);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+.system-header .system-motto {
+  font-family: var(--font-hand);
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+.system-header .data-source-badge {
+  margin-top: var(--space-3);
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* 分类切换标签 */
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+}
+.category-tab {
+  padding: var(--space-1) var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+  user-select: none;
+}
+.category-tab:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  background: rgba(255, 215, 0, 0.08);
+}
+.category-tab.active {
+  background: var(--accent-gold);
+  color: #000;
+  border-color: var(--accent-gold);
+  font-weight: 600;
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 子系统卡片网格 */
+.sub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+.sub-card {
+  aspect-ratio: 1;
+  background: var(--bg-card);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--duration-med) var(--ease-out-expo);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.6s var(--ease-out-expo) forwards;
+}
+.sub-card:nth-child(1) { animation-delay: 0.1s; }
+.sub-card:nth-child(2) { animation-delay: 0.2s; }
+.sub-card:nth-child(3) { animation-delay: 0.3s; }
+.sub-card:nth-child(4) { animation-delay: 0.4s; }
+.sub-card:nth-child(5) { animation-delay: 0.5s; }
+
+.sub-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(201,168,76,0.03) 100%);
+  opacity: 0;
+  transition: opacity var(--duration-med) var(--ease-out-expo);
+}
+.sub-card:hover::before { opacity: 1; }
+.sub-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(201,168,76,0.3);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2), var(--glow-gold);
+}
+.sub-card .sub-char {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  color: var(--accent-gold);
+  margin-bottom: var(--space-2);
+  line-height: 1;
+}
+.sub-card .sub-name {
+  font-family: var(--font-title);
+  font-size: var(--text-base);
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+.sub-card .sub-desc {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ============ CONTENT PAGE ============ */
+.content-page-inner {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5);
+}
+.content-header {
+  margin-bottom: var(--space-6);
+}
+.content-header .back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+  margin-bottom: var(--space-4);
+  border: none;
+  background: none;
+  padding: var(--space-1) var(--space-2);
+  border-radius: 8px;
+}
+.content-header .back-btn:hover { color: var(--accent-gold); }
+.content-header .content-title {
+  font-family: var(--font-title);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+.content-header .content-sub {
+  font-family: var(--font-hand);
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+}
+
+/* 卡片网格 - 瀑布流 */
+.content-grid {
+  column-count: 3;
+  column-gap: var(--space-4);
+  break-inside: avoid;
+}
+.content-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: var(--space-4);
+  transition: all var(--duration-med) var(--ease-out-expo);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(15px);
+  animation: fadeUp 0.5s var(--ease-out-expo) forwards;
+  break-inside: avoid;
+  margin-bottom: var(--space-4);
+  display: inline-block;
+  width: 100%;
+}
+.content-card:nth-child(1) { animation-delay: 0.05s; }
+.content-card:nth-child(2) { animation-delay: 0.1s; }
+.content-card:nth-child(3) { animation-delay: 0.15s; }
+.content-card:nth-child(4) { animation-delay: 0.2s; }
+.content-card:nth-child(5) { animation-delay: 0.25s; }
+.content-card:nth-child(6) { animation-delay: 0.3s; }
+.content-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(201,168,76,0.25);
+  box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+}
+.content-card .card-title {
+  font-family: var(--font-title);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+.content-card .card-desc {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.content-card .card-expand-hint {
+  display: inline-block;
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--accent-gold);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out-expo);
+}
+.content-card:hover .card-expand-hint {
+  opacity: 0.7;
+}
+
+/* ============ DETAIL MODAL ============ */
+.detail-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 9999;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out-expo);
+  pointer-events: none;
+}
+.detail-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.detail-modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 560px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.3s var(--ease-out-expo);
+}
+.detail-overlay.active .detail-modal {
+  transform: scale(1) translateY(0);
+}
+.detail-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-color);
+}
+.detail-modal-title {
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+.detail-modal-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+}
+.detail-modal-close:hover {
+  background: var(--accent-gold);
+  color: #fff;
+}
+.detail-modal-body {
+  padding: var(--space-5);
+}
+.detail-section-title {
+  font-family: var(--font-title);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+  color: var(--accent-gold);
+}
+.detail-section-body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+.detail-section-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.detail-section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.detail-tag {
+  padding: var(--space-1) var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+.detail-field {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+.detail-field-label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--accent-gold);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.detail-field-value {
+  font-size: var(--text-sm);
+  line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+.card-progress {
+  font-size: var(--text-xs);
+  color: var(--accent-gold);
+  margin-left: var(--space-1);
+}
+
+[data-theme="light"] .detail-overlay {
+  background: rgba(0,0,0,0.2);
+}
+[data-theme="light"] .detail-modal {
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+/* ============ NAVIGATION ARROWS ============ */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+  opacity: 0;
+  pointer-events: none;
+}
+.nav-arrow.show { opacity: 1; pointer-events: auto; }
+.nav-arrow:hover {
+  background: var(--accent-gold);
+  color: #fff;
+  transform: translateY(-50%) scale(1.1);
+}
+.nav-arrow-left { left: var(--space-4); }
+.nav-arrow-right { right: var(--space-4); }
+
+/* ============ PAGE INDICATOR ============ */
+.page-indicator {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  z-index: 50;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: right;
+  opacity: 0;
+  transition: opacity var(--duration-med) var(--ease-out-expo);
+  letter-spacing: 0.1em;
+}
+.page-indicator.show { opacity: 1; }
+.page-indicator .indicator-current { color: var(--accent-gold); font-size: var(--text-base); font-weight: 600; }
+.page-indicator .indicator-total { color: var(--text-muted); }
+
+/* ============ ANIMATION HELPER ============ */
+.fade-in { animation: fadeIn 0.6s var(--ease-out-expo) forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .page { padding: var(--space-4); }
+  .system-page { padding: var(--space-5) var(--space-3); }
+  .sub-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+  .sub-card { padding: var(--space-3); }
+  .sub-card .sub-char { font-size: var(--text-2xl); }
+  .content-grid { column-count: 2; }
+  .content-card { margin-bottom: var(--space-3); }
+  .system-header .system-icon { font-size: var(--text-4xl); }
+  .system-header .system-name { font-size: var(--text-2xl); }
+  .nav-arrow { width: 36px; height: 36px; font-size: 0.9rem; }
+  .nav-arrow-left { left: var(--space-2); }
+  .nav-arrow-right { right: var(--space-2); }
+  .breadcrumb { font-size: 0.6rem; padding: var(--space-1) var(--space-3); bottom: var(--space-3); }
+  .theme-toggle-light { top: var(--space-3); left: var(--space-3); width: 40px; height: 40px; font-size: 1rem; }
+  .theme-toggle-dark { bottom: var(--space-3); right: var(--space-3); width: 40px; height: 40px; font-size: 1rem; }
+  .planet .planet-label { font-size: 0.5rem; }
+  .planet .planet-char { font-size: 0.7rem; }
+  .planet-menu-item { min-width: 48px; min-height: 48px; font-size: 0.5rem; }
+  .planet-menu-item .menu-char { font-size: 0.85rem; }
+}
+
+@media (max-width: 480px) {
+  .sub-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }
+  .sub-card { min-height: 120px; }
+  .sub-card .sub-char { font-size: var(--text-xl); }
+  .sub-card .sub-name { font-size: var(--text-sm); }
+  .content-grid { column-count: 1; }
+}
+
+/* ============ LOADING SCREEN ============ */
+.loading-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 9999;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s var(--ease-out-expo), visibility 0.8s var(--ease-out-expo);
+}
+.loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+.loading-skeleton {
+  width: 60vmin; height: 60vmin;
+  max-width: 300px; max-height: 300px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(201,168,76,0.05), rgba(201,168,76,0.02));
+  border: 1px solid rgba(201,168,76,0.1);
+  position: relative;
+  animation: loadingPulse 2s ease-in-out infinite;
+}
+.loading-skeleton::after {
+  content: '宇宙';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  color: rgba(201,168,76,0.3);
+}
+.loading-skeleton-ring {
+  position: absolute;
+  top: -10px; left: -10px;
+  width: calc(100% + 20px); height: calc(100% + 20px);
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.08);
+  animation: loadingRing 2s linear infinite;
+}
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+@keyframes loadingRing {
+  to { transform: rotate(360deg); }
+}
+.loading-text {
+  margin-top: var(--space-5);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  letter-spacing: 0.3em;
+}
+
+/* ============ GLOW ORB ============ */
+.glow-orb {
+  position: fixed;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(80px);
+  opacity: 0.15;
+  transition: all var(--duration-slow) var(--ease-out-expo);
+}
+.glow-orb-1 {
+  top: -100px; right: -100px;
+  background: radial-gradient(circle, rgba(201,168,76,0.3), transparent);
+}
+.glow-orb-2 {
+  bottom: -100px; left: -100px;
+  background: radial-gradient(circle, rgba(74,144,217,0.2), transparent);
+}
+[data-theme="light"] .glow-orb { opacity: 0.08; }
+
+/* ============ WEEKDAY BADGE ============ */
+.weekday-badge {
+  position: fixed;
+  top: var(--space-5);
+  right: var(--space-5);
+  z-index: 100;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: right;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: fadeIn 1s 1.5s forwards;
+}
+.weekday-badge .day-name {
+  font-family: var(--font-title);
+  color: var(--accent-gold);
+  font-size: var(--text-sm);
+}
+
+/* ============ TOP NAV BAR ============ */
+.top-nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  z-index: 90;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3) var(--space-4);
+  background: linear-gradient(180deg, var(--bg-primary) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out-expo);
+  pointer-events: none;
+}
+.top-nav.show { opacity: 1; pointer-events: auto; }
+.top-nav-inner {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.top-nav-item {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.top-nav-item:hover {
+  color: var(--accent-gold);
+  border-color: var(--border-color);
+  background: var(--glass-bg);
+}
+.top-nav-item .nav-char {
+  font-family: var(--font-display);
+  margin-right: 4px;
+}
+
+/* ============ DAILY RECOMMENDATION CARD ============ */
+.daily-recommend {
+  position: relative;
+  margin-bottom: var(--space-5);
+  padding: var(--space-5);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.12), rgba(201, 168, 76, 0.04));
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--duration-med) var(--ease-out-expo);
+}
+.daily-recommend::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--accent-gold), var(--accent-gold-light));
+  border-radius: 4px 0 0 4px;
+}
+.daily-recommend:hover {
+  border-color: rgba(201, 168, 76, 0.5);
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.18), rgba(201, 168, 76, 0.06));
+  transform: translateY(-2px);
+  box-shadow: var(--glow-gold);
+}
+.daily-recommend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 12px;
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  margin-bottom: var(--space-3);
+  text-transform: uppercase;
+}
+.daily-recommend-title {
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+  color: var(--accent-gold-light);
+}
+.daily-recommend-explain {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-2);
+}
+.daily-recommend-example {
+  font-family: var(--font-hand);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  padding: var(--space-3);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border-left: 2px solid rgba(201, 168, 76, 0.2);
+}
+.daily-recommend-hint {
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+.daily-recommend-count {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  opacity: 0.4;
+}
+[data-theme="light"] .daily-recommend {
+  background: linear-gradient(135deg, rgba(180, 150, 80, 0.1), rgba(180, 150, 80, 0.03));
+  border-color: rgba(180, 150, 80, 0.2);
+}
+[data-theme="light"] .daily-recommend:hover {
+  background: linear-gradient(135deg, rgba(180, 150, 80, 0.15), rgba(180, 150, 80, 0.05));
+}
+
+@media (max-width: 768px) {
+  .top-nav { padding: var(--space-2) var(--space-2); }
+  .top-nav-item { font-size: 0.6rem; padding: var(--space-1) var(--space-2); }
+  .daily-recommend { padding: var(--space-4); }
+  .daily-recommend-title { font-size: var(--text-lg); }
+}
+</style>
+</head>
+<body>
+
+<!-- 加载骨架屏 -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-skeleton">
+    <div class="loading-skeleton-ring"></div>
+  </div>
+  <div class="loading-text">宇宙初开 · 万象更新</div>
+</div>
+
+<!-- 发光背景球 -->
+<div class="glow-orb glow-orb-1"></div>
+<div class="glow-orb glow-orb-2"></div>
+
+<!-- 星空背景 -->
+<canvas id="stars-canvas"></canvas>
+
+<!-- 昼夜切换 -->
+<div class="theme-toggle theme-toggle-light" id="themeLight" title="白天模式">
+  <span>☀</span>
+</div>
+<div class="theme-toggle theme-toggle-dark" id="themeDark" title="夜间模式">
+  <span>☽</span>
+</div>
+
+<!-- 星期展示 -->
+<div class="weekday-badge" id="weekdayBadge">
+  <span class="day-name" id="dayName"></span>
+  <br>
+  <span id="daySystem"></span>
+</div>
+
+<!-- 顶部导航栏 -->
+<div class="top-nav" id="topNav">
+  <div class="top-nav-inner" id="topNavInner"></div>
+</div>
+
+<!-- 导航箭头 -->
+<div class="nav-arrow nav-arrow-left" id="navLeft">‹</div>
+<div class="nav-arrow nav-arrow-right" id="navRight">›</div>
+
+<!-- 页面指示器 -->
+<div class="page-indicator" id="pageIndicator">
+  <span class="indicator-current" id="indicatorCurrent">1</span>
+  <span class="indicator-total"> / <span id="indicatorTotal">1</span></span>
+</div>
+
+<!-- 面包屑 -->
+<div class="breadcrumb" id="breadcrumb"></div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+
+  <!-- ===== 首页 ===== -->
+  <div class="page active" id="page-home">
+    <div class="ripple-bg">
+      <div class="ripple-ring"></div>
+      <div class="ripple-ring"></div>
+      <div class="ripple-ring"></div>
+      <div class="ripple-ring"></div>
+    </div>
+
+    <div class="cosmos-title">
+      <span class="title-char">宇宙</span>
+      <div class="title-sub">上下四方 · 古往今来</div>
+    </div>
+
+    <div class="solar-system" id="solarSystem">
+      <!-- 轨道由 JS 动态生成 -->
+    </div>
+
+    <!-- 行星悬浮菜单容器 -->
+    <div class="planet-menu" id="planetMenu"></div>
+  </div>
+
+  <!-- ===== 动态页面容器 ===== -->
+  <div class="page" id="page-system"></div>
+  <div class="page" id="page-content"></div>
+
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const SYSTEMS = [
+  {
+    id: 'learning',
+    name: '学习系统',
+    motto: '学以致用，日日更新',
+    icon: '慧',
+    char: '慧',
+    subs: [
+      { char: '道', name: '道法自然', desc: '仙命相卜·修密养生、方剂针灸、占星算命-MBTI、天地人相、选吉测局', items: ['修密养生', '方剂针灸', '占星算命-MBTI', '天地人相', '选吉测局'] },
+      { char: '法', name: '法相天地', desc: '思认定口·思维模型、认知偏差、定律法则、口诀语法、主义概念·共947条', items: ['思维模型', '认知偏差', '定律法则', '口诀语法', '主义概念'] },
+      { char: '术', name: '术绍古今', desc: '博览群书·阅读清单、人物评鉴、读书笔记', items: ['阅读清单', '人物评鉴', '读书笔记', '经典书评', '感悟随笔'] },
+      { char: '器', name: '器二不匮', desc: '物尽其用·识典古籍、资源网站、素材网站、字体画册、工具、设计系统', items: ['识典古籍', '资源网站', '素材网站', '字体画册', '工具', '设计系统'] },
+      { char: '势', name: '势如破竹', desc: '未来展望·人物评分体系、AI趋势、未来计划', items: ['人物评分', 'AI 趋势', '技术前瞻', '个人规划', '未来愿景'] }
+    ]
+  },
+  {
+    id: 'work',
+    name: '工作系统',
+    motto: '交付价值，兑换回报',
+    icon: '禄',
+    char: '禄',
+    subs: [
+      { char: '主', name: '主业清单', desc: '形色质构字·设计相关知识、集锦、面试、职业发展', items: ['形色质构字', '设计集锦', '面试记录', '职业发展', '公司名单'] },
+      { char: '副', name: '副业清单', desc: '兼职参考及经历，不断优化反馈迭代', items: ['兼职项目', '技能变现', '经验总结', '优化迭代', '收入追踪'] },
+      { char: '管', name: '管理清单', desc: '管理相关知识体系', items: ['团队管理', '项目管理', '时间管理', '决策方法', '领导力'] },
+      { char: '创', name: '创业清单', desc: '创业知识点记录', items: ['商业模型', '市场分析', '融资知识', '产品设计', '增长策略'] },
+      { char: '投', name: '投资清单', desc: '投资知识、投资推荐', items: ['基础概念', '基金理财', '股票投资', '风险管理', '投资组合'] }
+    ]
+  },
+  {
+    id: 'life',
+    name: '生活系统',
+    motto: '极简秩序，舒适日常',
+    icon: '泰',
+    char: '泰',
+    subs: [
+      { char: '软', name: '软件清单', desc: '账号、手机、软件', items: ['账号管理', '手机应用', '桌面软件', '效率工具', '创意软件'] },
+      { char: '硬', name: '硬件清单', desc: '电脑、手机、耳机、鼠标、键盘、组装机', items: ['电脑设备', '移动设备', '音频设备', '输入设备', 'DIY 装机'] },
+      { char: '系', name: '系统清单', desc: '系统、软件、美化、插件', items: ['操作系统', '开发环境', '桌面美化', '浏览器插件', '终端配置'] },
+      { char: '大', name: '大件清单', desc: '租房、买房、建房、装修', items: ['租房指南', '购房攻略', '建房规划', '装修设计', '家居布局'] },
+      { char: '小', name: '小件清单', desc: '服饰、厨房、彩电、出行、日常', items: ['服饰穿搭', '厨房好物', '影音设备', '出行装备', '日常用品'] }
+    ]
+  },
+  {
+    id: 'emotion',
+    name: '情感系统',
+    motto: '感知冷暖，建立联结',
+    icon: '福',
+    char: '福',
+    subs: [
+      { char: '孑', name: '主公清单', desc: '记录自己的想法、情绪系统', items: ['自我认知', '情绪日记', '内心独白', '成长感悟', '人格探索'] },
+      { char: '孓', name: '公主清单', desc: '与爱人的情感经历，时间线卡片', items: ['相遇时刻', '甜蜜日常', '旅行记忆', '重要纪念', '未来展望'] },
+      { char: '子', name: '儿女清单', desc: '教育理念、全面指南、成长记录', items: ['教育理念', '成长指南', '里程碑', '亲子时光', '未来寄语'] },
+      { char: '亲', name: '亲戚宠物', desc: '血脉亲情、联姻戚属、动物植物、纪念礼物', items: ['家族谱系', '姻亲关系', '宠物伙伴', '花木相伴', '礼物纪念'] },
+      { char: '友', name: '乡学事趣', desc: '同乡好友、同学、同事、同志好友', items: ['同乡情谊', '同学录', '同事录', '兴趣社群', '联系方式'] }
+    ]
+  },
+  {
+    id: 'health',
+    name: '健康系统',
+    motto: '身体有劲，万事带风',
+    icon: '寿',
+    char: '寿',
+    subs: [
+      { char: '风', name: '其疾如风', desc: '西医体系·疾病记录、身体解剖、急救', items: ['疾病档案', '身体解剖', '急救知识', '疫苗接种', '急性处理'] },
+      { char: '林', name: '其徐如林', desc: '康复医药·药品清单、康复运动、健康管理', items: ['药品清单', '康复运动', '产后恢复', '体检报告', '健康档案'] },
+      { char: '火', name: '侵掠如火', desc: '强壮训练·球类、水上运动、有氧运动', items: ['球类运动', '水上运动', '有氧健身', '拳击格斗', 'HIIT 训练'] },
+      { char: '山', name: '不动如山', desc: '核心训练·健身计划、记录、教程、水平评估', items: ['健身计划', '训练记录', '健身教程', '水平评估', '健身反馈'] },
+      { char: '阴', name: '难知如阴', desc: '中医体系·整体观、辨证论治、气血调理', items: ['中医基础', '辨证论治', '气血调理', '药食同源', '太极冥想'] }
+    ]
+  },
+  {
+    id: 'entertainment',
+    name: '娱乐系统',
+    motto: '切换频道，重启大脑',
+    icon: '禧',
+    char: '禧',
+    subs: [
+      { char: '旅', name: '旅游艺术', desc: '华北、华南、华东、边疆、国外', items: ['华北风光', '华南沿海', '华东水乡', '边疆探险', '国外旅行'] },
+      { char: '活', name: '活动艺术', desc: '学习、工作、生活、情感、健康、娱乐活动', items: ['学习活动', '工作活动', '生活活动', '情感活动', '娱乐活动'] },
+      { char: '思', name: '思想艺术', desc: '心话、冒险', items: ['心灵对话', '思想实验', '冒险计划', '创意灵感', '哲学思考'] },
+      { char: '影', name: '影音艺术', desc: '电影、电视、歌曲、乐曲、视频', items: ['电影推荐', '剧集追看', '音乐收藏', '乐曲赏析', '视频创作'] },
+      { char: '游', name: '游戏艺术', desc: '单机、联机、网友、桌游、网站', items: ['单机游戏', '联机游戏', '网络游戏', '桌游推荐', '趣味网站'] }
+    ]
+  },
+  {
+    id: 'epiphany',
+    name: '顿悟系统',
+    motto: '空空而来，空空而去',
+    icon: '悟',
+    char: '悟',
+    subs: [
+      { char: '元', name: '万物之始', desc: '1998-2010·出生至少年', items: ['童年记忆', '小学时光', '家庭温暖', '启蒙教育', '天真岁月'] },
+      { char: '亨', name: '万物之长', desc: '2011-2020·青春期至工作前', items: ['青春岁月', '中学时代', '大学时光', '成长蜕变', '梦想萌芽'] },
+      { char: '利', name: '万物之遂', desc: '2021-2060·工作时间段', items: ['职场生涯', '事业发展', '家庭建设', '社会贡献', '人生收获'] },
+      { char: '贞', name: '万物之成', desc: '2060-2098·往后岁月', items: ['智慧沉淀', '传承授业', '人生回顾', '宁静致远', '天地同在'] },
+      { char: '亓', name: '万物轮回', desc: '与天地同寿，万物与我为一', items: ['天人合一', '循环往复', '宇宙大道', '生生不息', '永恒当下'] }
+    ]
+  }
+];
+
+const WEEKDAY_SYSTEMS = ['学习', '工作', '生活', '情感', '健康', '娱乐', '顿悟'];
+const WEEKDAY_NAMES = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  currentPage: 'home',
+  currentSystem: null,
+  currentSub: null,
+  history: [],
+  theme: 'dark',
+  prevPage: null,
+  pageStack: [],
+  isTransitioning: false
+};
+
+// ============================================================
+// DOM REFS
+// ============================================================
+const $ = id => document.getElementById(id);
+const app = $('app');
+const pageHome = $('page-home');
+const pageSystem = $('page-system');
+const pageContent = $('page-content');
+const breadcrumb = $('breadcrumb');
+const navLeft = $('navLeft');
+const navRight = $('navRight');
+const pageIndicator = $('pageIndicator');
+const indicatorCurrent = $('indicatorCurrent');
+const indicatorTotal = $('indicatorTotal');
+const solarSystem = $('solarSystem');
+const planetMenu = $('planetMenu');
+const loadingScreen = $('loadingScreen');
+const dayName = $('dayName');
+const daySystem = $('daySystem');
+
+// ============================================================
+// STARS BACKGROUND
+// ============================================================
+function initStars() {
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let W, H;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    stars = [];
+    const count = Math.floor((W * H) / 8000);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.3,
+        a: Math.random() * 0.6 + 0.2,
+        speed: Math.random() * 0.02 + 0.005
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const isLight = state.theme === 'light';
+    stars.forEach(s => {
+      s.a += (Math.random() - 0.5) * s.speed;
+      s.a = Math.max(0.1, Math.min(0.8, s.a));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = isLight
+        ? `rgba(100, 90, 70, ${s.a * 0.3})`
+        : `rgba(255, 255, 255, ${s.a * 0.5})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  draw();
+  window.addEventListener('resize', resize);
+}
+
+// ============================================================
+// SOLAR SYSTEM (JS 驱动动画，确保点击可用)
+// ============================================================
+let planetElements = [];
+let planetAngles = [];
+let planetOrbitRadii = [];
+let planetSizes = [];
+const PLANET_COLORS = [
+  'linear-gradient(135deg, #4a90d9, #2a5a9a)',
+  'linear-gradient(135deg, #d4a54a, #a07830)',
+  'linear-gradient(135deg, #5ab86a, #3a8a4a)',
+  'linear-gradient(135deg, #d46060, #a04040)',
+  'linear-gradient(135deg, #60a0d4, #4070a0)',
+  'linear-gradient(135deg, #b080d4, #8050a0)',
+  'linear-gradient(135deg, #d4a0a0, #a07070)'
+];
+
+function initSolarSystem() {
+  solarSystem.innerHTML = '';
+  planetElements = [];
+  planetAngles = [];
+  planetOrbitRadii = [];
+
+  SYSTEMS.forEach((sys, i) => {
+    const orbit = document.createElement('div');
+    orbit.className = 'orbit';
+
+    const size = 3.6 + i * 0.4;
+    planetSizes[i] = size;
+
+    const planet = document.createElement('div');
+    planet.className = 'planet';
+    planet.dataset.system = i;
+    planet.style.background = PLANET_COLORS[i];
+    planet.style.width = size + 'vmin';
+    planet.style.height = size + 'vmin';
+    planet.style.marginLeft = -(size / 2) + 'vmin';
+    planet.style.top = -(size / 2) + 'vmin';
+    planet.style.fontSize = (0.6 + i * 0.05) + 'rem';
+
+    // 今天对应的系统放大
+    const today = new Date().getDay();
+    if (i === today) {
+      planet.style.transform = 'scale(1.3)';
+      planet.style.boxShadow = `0 0 40px rgba(201,168,76,0.3)`;
+      planet.style.zIndex = '10';
+    }
+
+    const charSpan = document.createElement('span');
+    charSpan.className = 'planet-char';
+    charSpan.textContent = sys.char;
+    planet.appendChild(charSpan);
+
+    const label = document.createElement('span');
+    label.className = 'planet-label';
+    label.textContent = sys.name;
+    planet.appendChild(label);
+
+    const ring = document.createElement('div');
+    ring.className = 'planet-glow-ring';
+    planet.appendChild(ring);
+
+    planet.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openSystem(i);
+    });
+    planet.addEventListener('mouseenter', () => showPlanetMenu(i, planet));
+    planet.addEventListener('mouseleave', () => hidePlanetMenu());
+
+    orbit.appendChild(planet);
+    solarSystem.appendChild(orbit);
+
+    planetElements.push(planet);
+    planetAngles.push(Math.random() * Math.PI * 2);
+    planetOrbitRadii.push(10 + i * 6); // 轨道半径 vmin
+  });
+
+  // 启动 JS 轨道动画
+  animateOrbits();
+}
+
+let orbitAnimId = null;
+let orbitStartTime = 0;
+const ORBIT_SPEEDS = [0.5, 0.4, 0.3, 0.25, 0.2, 0.17, 0.15]; // rad/s
+
+function animateOrbits() {
+  if (!orbitStartTime) orbitStartTime = performance.now();
+  const elapsed = (performance.now() - orbitStartTime) / 1000;
+
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  const vmin = Math.min(window.innerWidth, window.innerHeight) / 100;
+
+  planetElements.forEach((planet, i) => {
+    const angle = planetAngles[i] + elapsed * ORBIT_SPEEDS[i];
+    const radius = planetOrbitRadii[i] * vmin;
+    const px = cx + Math.cos(angle) * radius - planet.offsetWidth / 2;
+    const py = cy + Math.sin(angle) * radius - planet.offsetHeight / 2;
+    planet.style.left = px + 'px';
+    planet.style.top = py + 'px';
+  });
+
+  orbitAnimId = requestAnimationFrame(animateOrbits);
+}
+
+// ============================================================
+// PLANET MENU
+// ============================================================
+function showPlanetMenu(idx, planetEl) {
+  const rect = planetEl.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+
+  planetMenu.innerHTML = '';
+  planetMenu.style.display = 'block';
+  planetMenu.classList.add('show');
+
+  const sys = SYSTEMS[idx];
+  const count = sys.subs.length;
+  const radius = 90;
+
+  sys.subs.forEach((sub, i) => {
+    const angle = (i / count) * Math.PI * 2 - Math.PI / 2;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+
+    const item = document.createElement('div');
+    item.className = 'planet-menu-item';
+    item.style.left = (cx + x - 28) + 'px';
+    item.style.top = (cy + y - 28) + 'px';
+    item.style.animationDelay = (i * 0.05) + 's';
+
+    item.innerHTML = `
+      <span class="menu-char">${sub.char}</span>
+      <span class="menu-label">${sub.name}</span>
+    `;
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      hidePlanetMenu();
+      openSubSystem(idx, i);
+    });
+    planetMenu.appendChild(item);
+  });
+}
+
+function hidePlanetMenu() {
+  planetMenu.classList.remove('show');
+  setTimeout(() => { planetMenu.style.display = 'none'; }, 300);
+}
+
+// ============================================================
+// PAGE NAVIGATION
+// ============================================================
+function navigateTo(pageId, direction) {
+  if (state.isTransitioning) return;
+  state.isTransitioning = true;
+
+  const current = document.querySelector('.page.active');
+  const target = document.getElementById(pageId);
+
+  if (!target || current === target) {
+    state.isTransitioning = false;
+    return;
+  }
+
+  const dir = direction || 'left';
+
+  // 隐藏星球菜单
+  hidePlanetMenu();
+
+  // 清理所有页面动画状态
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('enter-left', 'enter-right', 'exit-left', 'exit-right');
+  });
+
+  // 退出动画 - 当前页滑出
+  current.classList.remove('active');
+  current.classList.add(dir === 'left' ? 'exit-left' : 'exit-right');
+
+  // 目标进入 - 从另一侧滑入
+  target.classList.add(dir === 'left' ? 'enter-right' : 'enter-left');
+
+  // 强制回流后执行动画
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      target.classList.remove('enter-left', 'enter-right');
+      target.classList.add('active');
+      current.classList.remove('exit-left', 'exit-right');
+      // 等 CSS 过渡完成后重置
+      setTimeout(() => {
+        state.isTransitioning = false;
+      }, 850);
+    });
+  });
+}
+
+// ============================================================
+// OPEN SYSTEM
+// ============================================================
+function openSystem(idx, direction) {
+  const sys = SYSTEMS[idx];
+  state.currentSystem = idx;
+  state.currentSub = null;
+  state.history = [{ type: 'home' }];
+  state.pageStack = [];
+
+  const page = pageSystem;
+  page.innerHTML = '';
+
+  const container = document.createElement('div');
+  container.className = 'system-page';
+
+  const header = document.createElement('div');
+  header.className = 'system-header';
+  header.innerHTML = `
+    <span class="system-icon">${sys.char}</span>
+    <h1 class="system-name">${sys.name}</h1>
+    <p class="system-motto">${sys.motto}</p>
+    ${idx === 0 ? '<div class="data-source-badge">数据来源：Notion · 法相天地.csv（67条思维模型） / 语雀文档</div>' : ''}
+  `;
+  container.appendChild(header);
+
+  const grid = document.createElement('div');
+  grid.className = 'sub-grid';
+
+  sys.subs.forEach((sub, i) => {
+    const card = document.createElement('div');
+    card.className = 'sub-card';
+    card.innerHTML = `
+      <span class="sub-char">${sub.char}</span>
+      <span class="sub-name">${sub.name}</span>
+      <span class="sub-desc">${sub.desc}</span>
+    `;
+    card.addEventListener('click', () => openSubSystem(idx, i));
+    grid.appendChild(card);
+  });
+
+  container.appendChild(grid);
+  page.appendChild(container);
+
+  // 更新面包屑
+  updateBreadcrumb([{ label: '宇宙', page: 'page-home' }, { label: sys.name }]);
+  updateIndicator(1, 2);
+
+  // 显示导航
+  navLeft.classList.remove('show');
+  navRight.classList.add('show');
+
+  navigateTo('page-system', direction || 'left');
+}
+
+// ============================================================
+// OPEN SUB SYSTEM
+// ============================================================
+// 学习系统数据描述（来自语雀文档）
+const LEARNING_DATA = {
+  // 道法自然
+  '道': {
+    desc: '从语雀《道法自然》文档获取，涵盖仙命相卜五大领域，包括修密养生、方剂针灸、占星算命-MBTI、天地人相、选吉测局等传统智慧。',
+    items: {
+      '修密养生': '密宗修行与养生之道，结合传统养生功法与现代健康理念，记录各类修行法门、养生心得与体悟。',
+      '方剂针灸': '中医方剂与针灸知识库，收录各类经典方剂、穴位图谱、针灸技法及临床实践经验。',
+      '占星算命-MBTI': '占星术与MBTI性格分析融合，探索星盘命理与心理学人格分类的交叉领域，提供自我认知工具。',
+      '天地人相': '天相、地相、人相三才之学，涵盖风水堪舆、面相手相、命理推算等传统术数知识。',
+      '选吉测局': '择吉日、测局势的实用方法，包括黄历择吉、奇门遁甲、六爻占卜等预测决策工具。'
+    }
+  },
+  // 法相天地（数据来源：Notion《法相天地.csv》数据库，共947条，含5大类）
+  '法': {
+    desc: '从Notion《法相天地.csv》数据库获取，涵盖思维模型、认知偏差、定律法则、口诀语法、主义概念五大知识体系。其中思维模型分类已导入67条详细记录。',
+    items: {
+      '思维模型': {
+        desc: '思维模型知识库，收录第一性原理、复利思维、系统思维、逆向思维、奥卡姆剃刀、帕累托法则、飞轮效应、金字塔原理、MECE法则、SWOT分析、PEST分析、刻意练习、心流理论、设计思维等经典模型，每日一主题记录运用心得。',
+        entries: [
+          { name: '费曼技巧', explanation: '以教为学，将知识教授他人', example: '让他人学习好的方法就是自己装不懂去问；让自己学习好的方法就是免费去教他人。', progress: 100, status: '完成' },
+          { name: '黄金圈法则', explanation: 'Why→How→What', example: '第一个颠覆式思考模式，逆向思考问题。先问为什么？，与日常思维模式翻转过来思考。', status: '完成' },
+          { name: 'SCQA模型', explanation: '开场或聊天时，寻找话题提升。结构化表达：情景→冲突→问题→回答', example: '经典广告案例：得了灰指甲，一个传染两，问我怎么办？马上用亮甲！', progress: 49, status: '学习' },
+          { name: '10/10/10法则', explanation: '短中长期的影响与后果，更多时间维度思考', example: '多维度思考之一：时间维度思考，空间维度思考，对于任何事情都奏效。', progress: 100, status: '等待' },
+          { name: '多维度思考', explanation: '多模型使用，终极的整合能力', example: '某天，一位老师在课堂上提问："树上有10只鸟，猎人开枪打死了1只，还剩下几只？"', progress: 52, status: '等待' },
+          { name: '归纳推理', explanation: '由个体推理出普时理论', example: '在一个平面内，直角三角形内角和是180度；锐角三角形内角和是180度...', progress: 100, status: '等待' },
+          { name: '演绎推理', explanation: '由一般到特殊。最严格的逻辑推理，由大前提、小前提、结论三段式组成', example: '功不抵过：商鞅经过变法，使秦国的经济得到发展...', status: '完成' },
+          { name: '类比思维', explanation: '从两个对象的相似之处中受到启发', example: '类比思维的规律是,你能想到的类比越多,你的判断就会越准确', status: '等待' },
+          { name: '逆向思维', explanation: '反向思考，开创新思考', example: '多维度思考之一。', status: '等待' },
+          { name: '刻意练习', explanation: '目标→指导→策略→投入', status: '等待' },
+          { name: 'RIA阅读法', explanation: '阅读片段→自己重述→联想经验→实际应用', example: '良好的阅读习惯，当下将知识点化为己有。', status: '等待' },
+          { name: '二八定律', explanation: '删繁就简，只做最重要的事情', example: '优先计划分，优先完成重要任务，花费80%时间做的20%重要事情', progress: 100, status: '等待' },
+          { name: '六何法', explanation: '何时何地何人何事何故，如何处理？', example: '5W1H，why、what、who、where、when、how', status: '等待' },
+          { name: '思维导图', explanation: '理清思路、捕捉创意、加强记忆', example: '用于复习', progress: 100, status: '等待' },
+          { name: 'SWOT分析', explanation: '优势、劣势、机会、威胁', example: '任何场景皆可使用', status: '等待' },
+          { name: '头脑风暴', explanation: '打开创意思维，已经在用了', example: '需要创意时，注意这个方式即可', status: '等待' },
+          { name: '福格行为模型', explanation: '行为=动机、能力、触发条件', status: '等待' },
+          { name: 'Scamper', explanation: '创意发挥，替合改调用除反', example: '口诀：替合改调变删反', status: '等待' },
+          { name: '设计思维', explanation: '遇到不同情景进行，思维模型实现', status: '等待' },
+          { name: 'MVP', explanation: '最小可行，不断修正，收集反馈，满足市场', example: '类似于微计划执行', progress: 100, status: '等待' },
+          { name: '峰终定律', explanation: '增加高峰高度，提升终点惊喜', status: '等待' },
+          { name: 'AARRR漏斗模型', explanation: '获取→激活→留存→收益→传播', status: '等待' },
+          { name: '上瘾模型', explanation: 'HOOK模型，触发→行动→奖励→投入', status: '等待' },
+          { name: '五大圈层模型', explanation: '感知、角色、资源、能力、存在', example: '全面了解一个人的情况，适合分析一个人的情况。', progress: 81, status: '等待' },
+          { name: '高效倾听模型', explanation: '需要提升开放姿态能力及微笑', status: '等待' },
+          { name: '情绪ABC模型', explanation: '主动避免让信念左右自己的情绪', example: '不同的人可能会因为不同的看法而导致不同的情绪状态', status: '等待' },
+          { name: '乔哈里视窗', explanation: '审视自己与对方所知晓的情况，注意信息公开程度', status: '等待' },
+          { name: '冰山模型', explanation: '建立自我认知。水面：知识技能，水下：综合能力、个性、价值观、动机', status: '等待' },
+          { name: '故事五要素', explanation: '时间、地点、人物、冲突、结局', example: '时间：汉末、地点：九州大陆；人物：三国历史人物...', status: '等待' },
+          { name: 'STAR模型', explanation: '结构化清晰讲述事情。背景、目标、行动、结果', status: '等待' },
+          { name: 'STORY模型', explanation: '没有清晰的讲述', status: '等待' },
+          { name: '英雄之旅模型', explanation: '时间地点人物冲突结局', example: '没想到电影都是有如此讨论结构', status: '等待' },
+          { name: 'TOPIC模型', explanation: '系统化提升团队凝聚力', status: '等待' },
+          { name: '杠杆思维', explanation: '寻找决定性因素，小成本大利益', example: '就如健身，决定性因素是持之以恒的', status: '等待' },
+          { name: 'POA行动', explanation: '伙伴、方法、目标。三个指标越多，行动力就越强', example: '建立更大团队、寻找更多方法、全力聚焦目标', status: '等待' },
+          { name: '系统思维', explanation: '动态思考、整体思考，组合成全面思考', status: '等待' },
+          { name: '整合思维', explanation: '整合选择，同时处理两件对立的事情，跳出选择怪圈', status: '等待' },
+          { name: '多元思维模型', explanation: '结合多学科知识进行思考', example: '需要多个底层学科的基础知识', status: '等待' },
+          { name: '学习金字塔', explanation: '一个完整的学习模型，进行系统化学习思考', status: '等待' },
+          { name: '库伯学习圈', explanation: '具体经验→反思观察→抽象概念化→主动实践', example: '对某个行业的多维度分析', status: '等待' },
+          { name: 'SMART法则', explanation: '清晰、衡量、可达到、相关性、最后期限', status: '等待' },
+          { name: 'PEST四维度', explanation: '政治、经济、社会、技术', example: '对某个行业/公司/产品的多维度分析', status: '等待' },
+          { name: 'MECE法则', explanation: '相互独立，完全穷尽。无重复，无遗漏', example: '思维导图等方式，把握问题的全景', status: '等待' },
+          { name: '番茄工作法', explanation: '定时工作，中途破坏则重新计算', example: '目前已经融合进生活习惯工作习惯，非常有效', status: '等待' },
+          { name: 'NLP理解层次', explanation: '环境、行为、能力、信念、身份、精神', example: '环境：人事物时财设备行为...', status: '等待' },
+          { name: '冠军思维', explanation: '自己就是冠军，即使在逆境中也能保持秉性', example: '雷打不动，无畏前行，不为外界变化而轻易变动', status: '等待' },
+          { name: '流程思维', explanation: '先流程框架后计划行动', status: '等待' },
+          { name: '绿灯思维', explanation: '生命中出现的一切都是为自己服务', example: '野心放大，无限冲刺！', status: '等待' },
+          { name: '主动思维', explanation: '做事情的主动性、创新性', status: '等待' },
+          { name: '金字塔模型', explanation: '先汇总再分析：1.核心；2.理论；3.案例', progress: 65, status: '等待' },
+          { name: '总分总', explanation: '总结概括、分类拆解、收尾总结', status: '等待' },
+          { name: '非暴力沟通', explanation: '观察、情绪、需要、请求', example: '以下是一个NVC实践者叙述他的一段经历...', status: '等待' },
+          { name: 'PDCA法', explanation: '优化工作流程：计划、执行、检查、调整', status: '等待' },
+          { name: '一解一', explanation: '总分总的变式，先简短回答，后解释，最后重复总结', example: '电视记者问专家：台风九头鸟会在汕南登陆吗？', status: '等待' },
+          { name: '夸踩夸', explanation: '先小夸，然后踩(自己想说的)，最后夸', status: '等待' },
+          { name: '谁来去', explanation: '我是谁，我从哪里来，到哪里去', example: '面试等自我介绍', status: '等待' },
+          { name: '勇难成', explanation: '勇敢冒险、艰难前行、成功传承', example: '勇敢出发、艰难取胜、成长回归', status: '等待' },
+          { name: '还原论模型', explanation: '将整体分解为局部，逐个击破', example: '系统化的第一步', status: '等待' },
+          { name: '储蓄池模型', explanation: '精神、情感、财富三大储蓄池，储蓄越大，抵御波谷能力越强', example: '人生九宫格：顿悟、健康、情感、财富', status: '等待' },
+          { name: '心流状态', explanation: '完全沉浸在活动中并专心致志，令人满足且愉悦', example: '可以积极营造完美的环境来实现心流状态', status: '完成' },
+          { name: '系统学习', explanation: '整体浏览一个系列文章，获取各方面信息', status: '等待' },
+          { name: '基点下移', explanation: '找到思维模型的共同起源，推出更底层的模型', example: '所有学科在几个简单公理上延伸出来', status: '等待' },
+          { name: '24小时学习法', explanation: '每天45分钟坚持一个月，分解技能，单独练习', status: '等待' },
+          { name: '矛盾论', explanation: '一件事情总会有两面性', example: '现在失业难找工作，主要矛盾在于...', status: '等待' },
+          { name: '期待的力量', explanation: '期待自己，期待他人', status: '等待' },
+          { name: '非暴力沟通', explanation: '观察、情绪、需要、请求（NVC）', status: '等待' }
+        ]
+      },
+      '认知偏差': '系统性认知偏差清单，包括确认偏误、锚定效应、可得性启发、幸存者偏差、光环效应、社会期望偏误、丹宁-克鲁格效应、沉没成本谬误、框架效应、后见之明偏误、基本归因错误、自利偏误、从众效应、群内偏误、外群体同质效应、刻板印象、偏见盲点、虚假共识效应、达克效应、认知失调等，帮助识别并克服思维盲区。',
+      '定律法则': '跨学科定律法则知识库，从墨菲定律到帕金森定律，从彼得原理到古德哈特定律，从霍桑效应到马太效应，从摩尔定律到梅特卡夫定律，从牛顿定律到热力学定律，从二八法则到长尾理论，构建通识知识体系。',
+      '口诀语法': '各类实用口诀与语法汇编，涵盖记忆法（记忆宫殿、联想记忆、间隔重复）、速算法（印度数学、交叉乘法）、学习方法（费曼技巧、SQ3R、康奈尔笔记）、语法规则（汉语语法、英语语法逻辑）、编程口诀（设计模式口诀、数据结构口诀）等内容，便于快速记忆与应用。',
+      '主义概念': '各类主义与核心概念梳理，包括实用主义、存在主义、理性主义、经验主义、结构主义、后现代主义、自由主义、社群主义、进步主义、保守主义、极简主义、永恒主义、本质主义、建构主义、联结主义、行为主义、人本主义、整体论、还原论、系统论等哲学与思想流派的核心理念。'
+    }
+  },
+  // 术绍古今
+  '术': {
+    desc: '从语雀《术绍古今》文档获取，包含阅读清单、人物评鉴、读书笔记等，记录了各类书籍的阅读感悟。',
+    items: {
+      '阅读清单': '读书清单总览，涵盖经典、专业、认知、工具、杂书五类，记录每本书的阅读进度与核心收获。',
+      '人物评鉴': '历史人物评鉴数据库，包含三国人物等评分体系（统帅、将略、勇武、品性等多维度评分）。',
+      '读书笔记': '详细的读书笔记与感悟，记录阅读过程中的思考、疑问与启发，形成个人知识体系。',
+      '经典书评': '对经典著作的书评与深度分析，如《百年孤独》等文学作品的阅读体验与评析。',
+      '感悟随笔': '阅读过程中的随想与感悟，记录思想碰撞的火花与个人成长的轨迹。'
+    }
+  },
+  // 器二不匮
+  '器': {
+    desc: '从语雀《器二不匮》文档获取，共132条记录，涵盖识典古籍、资源网站、素材网站、字体画册、工具、设计系统六大类。',
+    items: {
+      '识典古籍': '古籍数字化资源汇总，收录各类经典古籍在线阅读平台与数字化档案，方便查阅传统典籍。',
+      '资源网站': '优质资源网站导航，涵盖设计、开发、学习、工具等多个领域的精选网站合集。',
+      '素材网站': '设计素材资源库，包括图片、图标、插画、3D模型等各类创意素材网站推荐。',
+      '字体画册': '字体与画册资源库，收录各类中英文字体、字库、画册参考及排版设计灵感。',
+      '工具': '效率工具集合，包括设计工具、开发工具、办公工具、AI工具等日常使用的软件与服务。',
+      '设计系统': '设计系统规范与资源，包含组件库、设计规范、设计模式等系统性设计参考资料。'
+    }
+  },
+  // 势如破竹
+  '势': {
+    desc: '从语雀《势如破竹》文档获取，包含三国人物多维度评分体系（统帅、将略、勇武、品性等），以及未来趋势展望。',
+    items: {
+      '人物评分': '三国人物综合评分体系，从统帅、将略、勇武、品性等维度对历史人物进行量化评估，如黄忠（统帅93、将略92、勇武95、品性90）。',
+      'AI 趋势': '人工智能发展趋势追踪，记录AI技术演进、行业应用、伦理思考等前沿动态。',
+      '技术前瞻': '前沿技术展望与趋势分析，涵盖新兴技术领域的发展方向与个人技术路线规划。',
+      '个人规划': '个人成长与职业发展规划，基于过往经验与未来趋势制定阶段性目标与行动计划。',
+      '未来愿景': '对未来生活、工作、学习的愿景与想象，结合科技发展与个人理想勾勒未来图景。'
+    }
+  }
+};
+
+function getLearningItemDesc(subIdx, itemIdx, itemName) {
+  const subKeys = ['道', '法', '术', '器', '势'];
+  const key = subKeys[subIdx];
+  if (key && LEARNING_DATA[key] && LEARNING_DATA[key].items[itemName]) {
+    const item = LEARNING_DATA[key].items[itemName];
+    if (typeof item === 'string') return item;
+    return item.desc || '相关内容';
+  }
+  return `${LEARNING_DATA[key]?.desc || '相关内容'} · 数据来源：语雀文档，可通过上传功能补充更多数据。`;
+}
+
+function getLearningItemFullDesc(subIdx, itemIdx, itemName) {
+  const subKeys = ['道', '法', '术', '器', '势'];
+  const key = subKeys[subIdx];
+  const data = LEARNING_DATA[key];
+  if (!data) return '暂无详细数据';
+  const item = data.items[itemName];
+  if (!item) return `<p>${data.desc}</p>`;
+  if (typeof item === 'string') {
+    return `<div class="detail-section">
+      <div class="detail-section-title">${itemName}</div>
+      <p class="detail-section-body">${item}</p>
+      <div class="detail-section-meta">
+        <span>所属：${key}·${itemName}</span>
+        <span>数据来源：语雀文档</span>
+      </div>
+    </div>`;
+  }
+  return `<div class="detail-section">
+    <div class="detail-section-title">${itemName}</div>
+    <p class="detail-section-body">${item.desc || ''}</p>
+    <div class="detail-section-meta">
+      <span>数据来源：Notion《法相天地.csv》</span>
+      <span>共 ${item.entries ? item.entries.length : 0} 条记录</span>
+    </div>
+  </div>`;
+}
+
+// 生成瀑布流卡片数据
+function generateWaterfallCards(sysIdx, subIdx, sub, catIdx) {
+  const subKeys = ['道', '法', '术', '器', '势'];
+  const key = subKeys[subIdx];
+  const data = LEARNING_DATA[key];
+  if (!data) return [];
+
+  const itemName = sub.items[catIdx || 0];
+  const item = data.items[itemName];
+  if (!item) return [];
+
+  // 如果 item 是字符串（简单描述），生成一张卡片
+  if (typeof item === 'string') {
+    return [{
+      title: itemName,
+      desc: truncateText(item, 120),
+      meta: '数据来源：语雀',
+      height: '0',
+      fullHtml: `<p>${item}</p>`
+    }];
+  }
+
+  // 如果 item 有 entries 数组，为每个条目生成卡片
+  if (item.entries && item.entries.length > 0) {
+    return item.entries.map((entry, i) => {
+      const statusMap = { '完成': '✅', '学习': '📖', '等待': '⏳' };
+      const statusEmoji = statusMap[entry.status] || '';
+      const progressHtml = entry.progress ? `<span class="card-progress">进度: ${entry.progress}%</span>` : '';
+      const meta = `${statusEmoji} ${entry.status || ''} ${progressHtml}`.trim();
+
+      // 构建详情 HTML
+      let detailHtml = `<div class="detail-section">
+        <div class="detail-section-title">${entry.name}</div>`;
+      if (entry.explanation) {
+        detailHtml += `<div class="detail-field">
+          <span class="detail-field-label">📝 核心解释</span>
+          <p class="detail-field-value">${entry.explanation}</p>
+        </div>`;
+      }
+      if (entry.example && entry.example !== '-') {
+        detailHtml += `<div class="detail-field">
+          <span class="detail-field-label">💡 案例/应用</span>
+          <p class="detail-field-value">${entry.example}</p>
+        </div>`;
+      }
+      if (entry.progress) {
+        detailHtml += `<div class="detail-field">
+          <span class="detail-field-label">📊 学习进度</span>
+          <p class="detail-field-value">${entry.progress}%</p>
+        </div>`;
+      }
+      detailHtml += `<div class="detail-section-meta">
+        <span>分类：${itemName}</span>
+        <span>状态：${entry.status || '待学习'}</span>
+        <span>数据来源：Notion</span>
+      </div></div>`;
+
+      // 随机高度偏移，让瀑布流更自然
+      const heights = ['0', '8px', '16px', '4px', '12px', '20px'];
+      const height = heights[i % heights.length];
+
+      return {
+        title: entry.name,
+        desc: entry.explanation || '',
+        meta: meta,
+        height: height,
+        fullHtml: detailHtml
+      };
+    });
+  }
+
+  // 兜底：返回一张描述卡片
+  return [{
+    title: itemName,
+    desc: truncateText(item.desc || data.desc, 120),
+    meta: '',
+    height: '0',
+    fullHtml: `<p>${item.desc || data.desc}</p>`
+  }];
+}
+
+function truncateText(text, maxLen) {
+  if (text.length <= maxLen) return text;
+  return text.substring(0, maxLen) + '...';
+}
+
+// 卡片详情弹窗
+let activeEscHandler = null;
+
+function showCardDetail(title, contentHtml) {
+  const overlay = document.createElement('div');
+  overlay.className = 'detail-overlay';
+  overlay.innerHTML = `
+    <div class="detail-modal">
+      <div class="detail-modal-header">
+        <h2 class="detail-modal-title">${title}</h2>
+        <button class="detail-modal-close" id="detailCloseBtn">✕</button>
+      </div>
+      <div class="detail-modal-body">${contentHtml}</div>
+    </div>
+  `;
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeDetail(overlay);
+  });
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add('active'));
+  document.getElementById('detailCloseBtn').addEventListener('click', () => closeDetail(overlay));
+  activeEscHandler = (e) => {
+    if (e.key === 'Escape') closeDetail(overlay);
+  };
+  document.addEventListener('keydown', activeEscHandler);
+}
+
+function closeDetail(overlay) {
+  overlay.classList.remove('active');
+  setTimeout(() => overlay.remove(), 300);
+  if (activeEscHandler) {
+    document.removeEventListener('keydown', activeEscHandler);
+    activeEscHandler = null;
+  }
+}
+
+function openSubSystem(sysIdx, subIdx) {
+  const sys = SYSTEMS[sysIdx];
+  const sub = sys.subs[subIdx];
+  state.currentSub = subIdx;
+  state.pageStack.push({ type: 'system', idx: sysIdx });
+
+  // 如果子系统有多个分类，默认选中第一个
+  const initialCategory = sub.items && sub.items.length > 0 ? 0 : 0;
+  renderSubContent(sysIdx, subIdx, sub, initialCategory);
+}
+
+function renderSubContent(sysIdx, subIdx, sub, catIdx) {
+  const page = pageContent;
+  page.innerHTML = '';
+
+  const inner = document.createElement('div');
+  inner.className = 'content-page-inner';
+
+  const header = document.createElement('div');
+  header.className = 'content-header';
+  header.innerHTML = `
+    <button class="back-btn" onclick="goBack()">← 返回 ${SYSTEMS[sysIdx].name}</button>
+    <h1 class="content-title">${sub.char} · ${sub.name}</h1>
+    <p class="content-sub">${sub.desc}</p>
+  `;
+  inner.appendChild(header);
+
+  // 分类切换标签（仅当有多分类时显示）
+  if (sub.items && sub.items.length > 1) {
+    const tabBar = document.createElement('div');
+    tabBar.className = 'category-tabs';
+    sub.items.forEach((itemName, i) => {
+      const tab = document.createElement('span');
+      tab.className = 'category-tab' + (i === catIdx ? ' active' : '');
+      tab.textContent = itemName;
+      tab.addEventListener('click', () => renderSubContent(sysIdx, subIdx, sub, i));
+      tabBar.appendChild(tab);
+    });
+    inner.appendChild(tabBar);
+  }
+
+  // 每日推荐（仅对有详细条目的分类显示 — 思维模型/认知偏差等）
+  const itemName = sub.items[catIdx || 0];
+  let dailyEntries = null;
+  // 尝试从 LEARNING_DATA 获取（学习系统）
+  const subKeys = ['道', '法', '术', '器', '势'];
+  if (subIdx < subKeys.length) {
+    const ld = LEARNING_DATA[subKeys[subIdx]];
+    if (ld && ld.items[itemName] && ld.items[itemName].entries) {
+      dailyEntries = ld.items[itemName].entries;
+    }
+  }
+  // 如果 LEARNING_DATA 没有，尝试从 FAXIANG_DATA 获取（Notion 导入）
+  if (!dailyEntries && typeof FAXIANG_DATA !== 'undefined' && FAXIANG_DATA[itemName]) {
+    dailyEntries = FAXIANG_DATA[itemName];
+  }
+  if (dailyEntries && dailyEntries.length > 0) {
+    const dailyCard = createDailyRecommendation(dailyEntries, itemName, sysIdx, subIdx);
+    if (dailyCard) inner.appendChild(dailyCard);
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'content-grid';
+
+  // 生成瀑布流卡片数据
+  const waterfallCards = generateWaterfallCards(sysIdx, subIdx, sub, catIdx);
+
+  waterfallCards.forEach((card, i) => {
+    const cardEl = document.createElement('div');
+    cardEl.className = 'content-card';
+    // 随机高度效果
+    const extraPadding = card.height || '0';
+    cardEl.style.paddingBottom = extraPadding;
+    cardEl.innerHTML = `
+      <h3 class="card-title">${card.title}</h3>
+      <p class="card-desc">${card.desc}</p>
+      ${card.meta ? `<div class="card-meta">${card.meta}</div>` : ''}
+      <span class="card-expand-hint">点击展开详情 →</span>
+    `;
+    cardEl.addEventListener('click', () => showCardDetail(card.title, card.fullHtml || `<p>${card.desc}</p>`));
+    grid.appendChild(cardEl);
+  });
+
+  inner.appendChild(grid);
+  page.appendChild(inner);
+
+  updateBreadcrumb([
+    { label: '宇宙', page: 'page-home' },
+    { label: SYSTEMS[sysIdx].name, page: 'page-system' },
+    { label: sub.name }
+  ]);
+  updateIndicator(2, 2);
+
+  navLeft.classList.add('show');
+  navRight.classList.remove('show');
+
+  navigateTo('page-content', 'left');
+}
+
+// ============================================================
+// GO BACK
+// ============================================================
+function goBack() {
+  const prev = state.pageStack.pop();
+  if (prev) {
+    if (prev.type === 'system') {
+      openSystem(prev.idx, 'right');
+    }
+  } else {
+    goHome();
+  }
+}
+
+function goHome() {
+  state.currentSystem = null;
+  state.currentSub = null;
+  state.history = [];
+  state.pageStack = [];
+  breadcrumb.classList.remove('show');
+  navLeft.classList.remove('show');
+  navRight.classList.remove('show');
+  pageIndicator.classList.remove('show');
+  hidePlanetMenu();
+  // 重置系统页和内容页
+  pageSystem.innerHTML = '';
+  pageContent.innerHTML = '';
+  navigateTo('page-home', 'right');
+}
+
+// ============================================================
+// BREADCRUMB
+// ============================================================
+function updateBreadcrumb(items) {
+  breadcrumb.innerHTML = '';
+  items.forEach((item, i) => {
+    if (i > 0) {
+      const sep = document.createElement('span');
+      sep.className = 'breadcrumb-sep';
+      sep.textContent = '·';
+      breadcrumb.appendChild(sep);
+    }
+    const el = document.createElement('span');
+    if (item.page && i < items.length - 1) {
+      el.className = 'breadcrumb-item';
+      el.textContent = item.label;
+      el.addEventListener('click', () => {
+        if (item.page === 'page-home') goHome();
+      });
+    } else {
+      el.className = 'breadcrumb-current';
+      el.textContent = item.label;
+    }
+    breadcrumb.appendChild(el);
+  });
+  breadcrumb.classList.add('show');
+  pageIndicator.classList.add('show');
+}
+
+function updateIndicator(current, total) {
+  indicatorCurrent.textContent = current;
+  indicatorTotal.textContent = total;
+  pageIndicator.classList.add('show');
+}
+
+// ============================================================
+// THEME TOGGLE
+// ============================================================
+$('themeLight').addEventListener('click', () => setTheme('light'));
+$('themeDark').addEventListener('click', () => setTheme('dark'));
+
+function setTheme(theme) {
+  state.theme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+// ============================================================
+// WEEKDAY
+// ============================================================
+function updateWeekday() {
+  const now = new Date();
+  const day = now.getDay();
+  dayName.textContent = WEEKDAY_NAMES[day];
+  daySystem.textContent = '今日 · ' + WEEKDAY_SYSTEMS[day] + '宇宙';
+}
+
+// ============================================================
+// TOP NAVIGATION
+// ============================================================
+function initTopNav() {
+  const container = document.getElementById('topNavInner');
+  container.innerHTML = '';
+  SYSTEMS.forEach((sys, i) => {
+    const item = document.createElement('span');
+    item.className = 'top-nav-item';
+    item.innerHTML = `<span class="nav-char">${sys.char}</span>${sys.name.replace('系统', '')}`;
+    item.addEventListener('click', () => {
+      hidePlanetMenu();
+      openSystem(i);
+    });
+    container.appendChild(item);
+  });
+  // 延迟显示导航栏
+  setTimeout(() => {
+    document.getElementById('topNav').classList.add('show');
+  }, 2000);
+}
+
+// ============================================================
+// KEYBOARD NAVIGATION
+// ============================================================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') {
+    const active = document.querySelector('.page.active');
+    if (active && active.id !== 'page-home') {
+      goBack();
+    }
+  } else if (e.key === 'ArrowRight') {
+    // forward navigation
+  } else if (e.key === 'Escape') {
+    goHome();
+  }
+});
+
+// ============================================================
+// NAVIGATION BUTTONS
+// ============================================================
+navLeft.addEventListener('click', goBack);
+navRight.addEventListener('click', () => {
+  // 当前在系统页，进入第一个子页面
+  if (state.currentSystem !== null && state.currentSub === null) {
+    openSubSystem(state.currentSystem, 0);
+  }
+});
+
+// ============================================================
+// TOUCH / SWIPE
+// ============================================================
+let touchStartX = 0;
+let touchEndX = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+document.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+  if (Math.abs(diff) > 80) {
+    if (diff > 0) {
+      // 左滑 - 前进
+      const active = document.querySelector('.page.active');
+      if (active && active.id === 'page-system' && state.currentSub === null) {
+        openSubSystem(state.currentSystem, 0);
+      }
+    } else {
+      // 右滑 - 后退
+      goBack();
+    }
+  }
+});
+
+// ============================================================
+// PARALLAX EFFECT (只影响背景，不干扰轨道动画)
+// ============================================================
+document.addEventListener('mousemove', (e) => {
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  const dx = (e.clientX - cx) / cx;
+  const dy = (e.clientY - cy) / cy;
+  // 应用 parallax 到 ripple-bg 和 cosmos-title，不干扰 orbit 的 CSS 动画
+  const ripple = document.querySelector('.ripple-bg');
+  if (ripple) {
+    ripple.style.transform = `translate(calc(-50% + ${dx * 8}px), calc(-50% + ${dy * 8}px))`;
+  }
+  const title = document.querySelector('.cosmos-title');
+  if (title) {
+    title.style.transform = `translate(${dx * 4}px, ${dy * 4}px)`;
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  initStars();
+  initSolarSystem();
+  updateWeekday();
+  initTopNav();
+
+  // 系统默认主题跟随系统
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(prefersDark ? 'dark' : 'light');
+
+  // 隐藏加载屏
+  setTimeout(() => {
+    loadingScreen.classList.add('hidden');
+  }, 1200);
+
+  // 每 10 秒更新星期
+  setInterval(updateWeekday, 600000);
+}
+
+// ============================================================
+// DAILY RECOMMENDATION
+// ============================================================
+function createDailyRecommendation(entries, categoryName, sysIdx, subIdx) {
+  if (!entries || entries.length === 0) return null;
+
+  // 基于日期选取当日推荐（确保同一天同一结果）
+  const today = new Date();
+  const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const idx = dateSeed % entries.length;
+  const entry = entries[idx];
+
+  if (!entry) return null;
+
+  const card = document.createElement('div');
+  card.className = 'daily-recommend';
+
+  // 构建详情 HTML
+  const detailHtml = `
+    <div class="detail-section">
+      <div class="detail-section-title">${entry.name}</div>
+      <p class="detail-section-body"><strong>释义：</strong>${entry.explanation || '暂无'}</p>
+      ${entry.example && entry.example !== '-' ? `<p class="detail-section-body" style="margin-top:12px;"><strong>案例：</strong>${entry.example}</p>` : ''}
+      ${entry.progress ? `<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border-color);font-size:0.85rem;color:var(--text-muted);">进度：${entry.progress === 100 ? '✅ 已完成' : entry.progress + '%'}</div>` : ''}
+      <div class="detail-section-meta" style="margin-top:16px;">
+        <span>${categoryName || '思维模型'}</span>
+        <span>${today.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })} 推荐</span>
+      </div>
+    </div>
+  `;
+
+  card.innerHTML = `
+    <div class="daily-recommend-badge">✦ 每日推荐</div>
+    <div class="daily-recommend-title">${entry.name}</div>
+    <div class="daily-recommend-explain">${entry.explanation || '暂无释义'}</div>
+    ${entry.example && entry.example !== '-' ? `<div class="daily-recommend-example">${entry.example}</div>` : ''}
+    <div class="daily-recommend-hint">点击查看完整详情 → ${categoryName} · 共 ${entries.length} 个模型</div>
+    <div class="daily-recommend-count">#${idx + 1}</div>
+  `;
+
+  card.addEventListener('click', () => showCardDetail(entry.name, detailHtml));
+
+  return card;
+}
+
+// 页面准备好后初始化
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
