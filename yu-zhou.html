@@ -2258,6 +2258,53 @@ document.addEventListener('mousemove', (e) => {
 });
 
 // ============================================================
+// NOTION 数据同步
+// ============================================================
+let notionSyncStatus = 'idle'; // idle | syncing | success | error
+
+async function fetchNotionData() {
+  if (notionSyncStatus === 'syncing') return;
+  notionSyncStatus = 'syncing';
+
+  try {
+    const res = await fetch('/api/notion-data');
+    const json = await res.json();
+
+    if (json.success && json.data && json.data.length > 0) {
+      // 更新思维模型数据
+      const target = LEARNING_DATA['法'].items['思维模型'];
+      if (target) {
+        target.entries = json.data;
+        target.desc = `思维模型知识库，从 Notion 数据库自动同步，共 ${json.count} 条记录。`;
+      }
+      notionSyncStatus = 'success';
+      console.log(`[Notion] 同步成功: ${json.count} 条思维模型 (${json.updatedAt})`);
+
+      // 如果当前页面正在显示思维模型，刷新显示
+      const currentPage = document.querySelector('#page-content.active');
+      if (currentPage && state.currentSystem !== null && state.currentSub !== null) {
+        const sys = SYSTEMS[state.currentSystem];
+        if (sys && sys.subs[state.currentSub]) {
+          const sub = sys.subs[state.currentSub];
+          if (sub.name === '法相天地') {
+            // 重新渲染当前内容
+            const activeTab = document.querySelector('.category-tab.active');
+            const catIdx = activeTab ? Array.from(document.querySelectorAll('.category-tab')).indexOf(activeTab) : 0;
+            renderSubContent(state.currentSystem, state.currentSub, sub, catIdx >= 0 ? catIdx : 0);
+          }
+        }
+      }
+    } else {
+      notionSyncStatus = 'error';
+      console.warn('[Notion] 同步返回空数据，使用本地缓存');
+    }
+  } catch (err) {
+    notionSyncStatus = 'error';
+    console.warn('[Notion] 同步失败，使用本地缓存:', err.message);
+  }
+}
+
+// ============================================================
 // INIT
 // ============================================================
 function init() {
@@ -2277,6 +2324,9 @@ function init() {
 
   // 每 10 秒更新星期
   setInterval(updateWeekday, 600000);
+
+  // 延迟加载 Notion 数据（不影响首页渲染）
+  setTimeout(fetchNotionData, 500);
 }
 
 // ============================================================

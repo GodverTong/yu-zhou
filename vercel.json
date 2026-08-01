@@ -2,7 +2,13 @@
   "version": 2,
   "buildCommand": null,
   "outputDirectory": ".",
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 10
+    }
+  },
   "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/yu-zhou.html" }
   ]
 }
