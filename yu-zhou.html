@@ -1158,6 +1158,38 @@ img { max-width: 100%; display: block; }
   background: linear-gradient(135deg, rgba(180, 150, 80, 0.15), rgba(180, 150, 80, 0.05));
 }
 
+/* ============ SYNC BAR ============ */
+.sync-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+.sync-status {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+.sync-btn {
+  padding: 4px 12px;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--accent-gold);
+  background: transparent;
+  border: 1px solid var(--accent-gold);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+  margin-left: auto;
+}
+.sync-btn:hover {
+  background: var(--accent-gold);
+  color: #000;
+}
+
 @media (max-width: 768px) {
   .top-nav { padding: var(--space-2) var(--space-2); }
   .top-nav-item { font-size: 0.6rem; padding: var(--space-1) var(--space-2); }
@@ -2003,6 +2035,11 @@ function renderSubContent(sysIdx, subIdx, sub, catIdx) {
     <button class="back-btn" onclick="goBack()">← 返回 ${SYSTEMS[sysIdx].name}</button>
     <h1 class="content-title">${sub.char} · ${sub.name}</h1>
     <p class="content-sub">${sub.desc}</p>
+    ${sub.name === '法相天地' ? `
+    <div class="sync-bar">
+      <span class="sync-status" id="syncStatus">${notionSyncStatus === 'success' ? '✅ 已同步' : notionSyncStatus === 'error' ? '⚠️ 同步失败' : notionSyncStatus === 'syncing' ? '🔄 同步中...' : '⏳ 等待同步'}</span>
+      <button class="sync-btn" onclick="manualSync()">🔄 手动同步</button>
+    </div>` : ''}
   `;
   inner.appendChild(header);
 
@@ -2265,6 +2302,7 @@ let notionSyncStatus = 'idle'; // idle | syncing | success | error
 async function fetchNotionData() {
   if (notionSyncStatus === 'syncing') return;
   notionSyncStatus = 'syncing';
+  updateSyncStatusUI();
 
   try {
     const res = await fetch('/api/notion-data');
@@ -2280,28 +2318,48 @@ async function fetchNotionData() {
       notionSyncStatus = 'success';
       console.log(`[Notion] 同步成功: ${json.count} 条思维模型 (${json.updatedAt})`);
 
-      // 如果当前页面正在显示思维模型，刷新显示
-      const currentPage = document.querySelector('#page-content.active');
-      if (currentPage && state.currentSystem !== null && state.currentSub !== null) {
-        const sys = SYSTEMS[state.currentSystem];
-        if (sys && sys.subs[state.currentSub]) {
-          const sub = sys.subs[state.currentSub];
-          if (sub.name === '法相天地') {
-            // 重新渲染当前内容
-            const activeTab = document.querySelector('.category-tab.active');
-            const catIdx = activeTab ? Array.from(document.querySelectorAll('.category-tab')).indexOf(activeTab) : 0;
-            renderSubContent(state.currentSystem, state.currentSub, sub, catIdx >= 0 ? catIdx : 0);
-          }
-        }
-      }
+      // 如果当前页面正在显示法相天地，刷新显示
+      refreshCurrentView();
     } else {
       notionSyncStatus = 'error';
-      console.warn('[Notion] 同步返回空数据，使用本地缓存');
+      console.warn('[Notion] 同步返回空数据，使用本地缓存', json.error || '');
     }
   } catch (err) {
     notionSyncStatus = 'error';
     console.warn('[Notion] 同步失败，使用本地缓存:', err.message);
   }
+  updateSyncStatusUI();
+}
+
+function updateSyncStatusUI() {
+  const el = document.getElementById('syncStatus');
+  if (el) {
+    if (notionSyncStatus === 'success') el.textContent = '✅ 已同步';
+    else if (notionSyncStatus === 'error') el.textContent = '⚠️ 同步失败';
+    else if (notionSyncStatus === 'syncing') el.textContent = '🔄 同步中...';
+    else el.textContent = '⏳ 等待同步';
+  }
+}
+
+function refreshCurrentView() {
+  const currentPage = document.querySelector('#page-content.active');
+  if (currentPage && state.currentSystem !== null && state.currentSub !== null) {
+    const sys = SYSTEMS[state.currentSystem];
+    if (sys && sys.subs[state.currentSub]) {
+      const sub = sys.subs[state.currentSub];
+      const activeTab = document.querySelector('.category-tab.active');
+      const catIdx = activeTab ? Array.from(document.querySelectorAll('.category-tab')).indexOf(activeTab) : 0;
+      renderSubContent(state.currentSystem, state.currentSub, sub, catIdx >= 0 ? catIdx : 0);
+    }
+  }
+}
+
+function manualSync() {
+  fetchNotionData().then(() => {
+    if (notionSyncStatus === 'success') {
+      refreshCurrentView();
+    }
+  });
 }
 
 // ============================================================

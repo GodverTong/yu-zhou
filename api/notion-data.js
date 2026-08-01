@@ -1,6 +1,6 @@
 // Vercel Serverless Function: 从 Notion API 获取法相天地数据
 const NOTION_API = 'https://api.notion.com/v1';
-const DATABASE_ID = '3af12e08d5a8803aa490f55d3e4b0976';
+const DATABASE_ID = '3af12e08-d5a8-80a3-aa49-0f55d3e4b0976';
 
 export default async function handler(req, res) {
   // 只允许 GET 请求
@@ -36,7 +36,12 @@ export default async function handler(req, res) {
       if (!response.ok) {
         const err = await response.text();
         console.error('Notion API error:', response.status, err);
-        return res.status(502).json({ error: 'Failed to fetch from Notion', detail: err });
+        return res.status(502).json({
+          error: 'Failed to fetch from Notion',
+          status: response.status,
+          detail: err,
+          hint: '请确认：1) Notion Integration Token 有效 2) 数据库已共享给该 Integration 3) 数据库 ID 正确'
+        });
       }
 
       const data = await response.json();
