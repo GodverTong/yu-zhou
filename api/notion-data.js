@@ -1,6 +1,6 @@
 // Vercel Serverless Function: 从 Notion API 获取法相天地数据
 const NOTION_API = 'https://api.notion.com/v1';
-const DATABASE_ID = '3af12e08-d5a8-80a3-aa49-0f55d3e4b0976';
+const DATABASE_ID = '3af12e08-d5a8-803a-a490-f55d3e4b0976';
 
 export default async function handler(req, res) {
   // 只允许 GET 请求
@@ -51,8 +51,8 @@ export default async function handler(req, res) {
         const props = page.properties;
         const entry = {
           name: props['标题']?.title?.[0]?.plain_text || '',
-          explanation: props['解释']?.rich_text?.[0]?.plain_text || '',
-          example: props['案例']?.rich_text?.[0]?.plain_text || '',
+          explanation: (props['解释']?.rich_text || []).map(t => t.plain_text).join(''),
+          example: (props['案例']?.rich_text || []).map(t => t.plain_text).join(''),
           progress: props['进度']?.number ?? null,
           status: props['状态']?.select?.name || '等待',
           link: props['链接']?.url || ''
